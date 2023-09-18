@@ -20,23 +20,46 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({message: "Unable to register user."});
 });
 
+//using callback
+function getBookList(list,callback){
+    if(list){
+      callback(null, list);
+    }
+    else{
+      callback(new Error("book list not found"));
+    }
+}
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-//   res.status(300).send(JSON.stringify(books,null,4));
+
+//using callback
+  getBookList(books, function(err,booklist){
+    if(err){
+      res.status(404).send(err);
+    }
+    else{
+      res.status(200).send(booklist)
+    }
+  })
 
 //using promise
-const booklist = new Promise((resolve,reject)=>{
-    try{
-        resolve(books);
-    }
-    catch(err){
-        reject(err);
-    }
+// const booklist = new Promise((resolve,reject)=>{
+//     try{
+//         resolve(books);
+//     }
+//     catch(err){
+//         reject(err);
+//     }
+// });
+//     booklist.then(
+//         (data) => res.status(200).send(data),
+//         (err) => res.status(404).send(err));
+
+// without any method
+//   res.status(300).send(JSON.stringify(books,null,4));
 });
-    booklist.then(
-        (data) => res.status(200).send(data),
-        (err) => res.status(404).send(err));
-});
+
 
 function getBookByISBN(isbn, callback) {
     let book = books[isbn];
@@ -52,17 +75,32 @@ function getBookByISBN(isbn, callback) {
 public_users.get('/isbn/:isbn',function (req, res) {
   let isbn = req.params.isbn;
 
-//   let book = books[isbn];
-//   res.status(300).send(book);
-
-//using callback
-getBookByISBN(isbn, function (error, book) {
-    if (error) {
-      res.status(404).send(error.message);
-    } else {
-      res.status(200).send(book);
+//using promise
+  const book = new Promise((resolve,reject)=>{
+    try{
+      resolve(data[isbn]);
+    }
+    catch(err){
+      reject(err);
     }
   });
+
+  book.then(
+    (data)=>res.status(200).send(data),
+    (err)=>res.status(404).json({message: "book not found"}));
+
+//using callback
+// getBookByISBN(isbn, function (error, book) {
+//     if (error) {
+//       res.status(404).send(error.message);
+//     } else {
+//       res.status(200).send(book);
+//     }
+//   });
+
+//without any method
+//   let book = books[isbn];
+//   res.status(300).send(book);
 });
 
 async function getBookByAuthor(author){
@@ -78,17 +116,17 @@ async function getBookByAuthor(author){
 public_users.get('/author/:author',async function (req, res) {
   let author = req.params.author;
 
+//using async/await
+  const book = await getBookByAuthor(author);
+  res.send(book);
+
+//without any method
 //   for(const key in books){
 //     if (books[key]["author"] == author){
 //         return res.status(200).send(books[key]);
 //     }
 //   }
 //   res.status(300).json({message: "book not found"});
-
-//using async/await
-  const book = await getBookByAuthor(author);
-  res.send(book);
-
 });
 
 function getBookByTitle(title,callback){
@@ -103,14 +141,7 @@ function getBookByTitle(title,callback){
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
     let title = req.params.title;
-    
-    // for(const key in books){
-    //   if (books[key]["title"] == title){
-    //       return res.status(200).send(books[key]);
-    //   }
-    // }
-    // res.status(300).json({message: "book not found"});
-
+  
 //using callback
     getBookByTitle(title, function(err,book){
         if(err){
@@ -119,7 +150,15 @@ public_users.get('/title/:title',function (req, res) {
         else{
             res.status(200).send(book);
         }
-    })
+    });
+
+//without any method
+    // for(const key in books){
+    //   if (books[key]["title"] == title){
+    //       return res.status(200).send(books[key]);
+    //   }
+    // }
+    // res.status(300).json({message: "book not found"});
 });
 
 //  Get book review
