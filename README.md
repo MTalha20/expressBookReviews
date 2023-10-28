@@ -41,6 +41,6 @@ Before getting started, make sure you have the following dependencies installed:
 
 ## Acknowledgments
 
-This project was originally forked from the [IBM Repository]([https://github.com/ibm/original-repo](https://github.com/ibm-developer-skills-network/expressBookReviews.git)). We have built upon their work and added the following features to create this Book Review App.
+This project was originally forked from the IBM Repository https://github.com/ibm-developer-skills-network/expressBookReviews.git. We have built upon their work and added the following features to create this Book Review App.
 
   
